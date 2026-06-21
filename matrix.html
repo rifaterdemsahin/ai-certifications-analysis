@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Certification Matrix - AI Certifications Analysis</title>
+  <meta name="description" content="Interactive matrix comparing global AI certifications with dynamic sorting, filtering, and official links.">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: center;
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .filter-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .filter-select, .search-input {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      min-width: 180px;
+      transition: var(--transition);
+    }
+    .filter-select:focus, .search-input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    .search-input {
+      min-width: 250px;
+    }
+    .official-link {
+      color: #818cf8;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .official-link:hover {
+      color: #a855f7;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon"></span>
+        AI Certs Analytica
+      </a>
+      <ul class="nav-menu">
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="claude-architect.html">Claude Architect</a></li>
+        <li><a href="iapp-aigp.html">IAPP AIGP</a></li>
+        <li><a href="google-cloud-ml.html">GCP ML Engineer</a></li>
+        <li><a href="aws-generative-ai.html">AWS GenAI</a></li>
+        <li><a href="nvidia-ai.html">NVIDIA Professional</a></li>
+      </ul>
+      <div>
+        <a href="matrix.html" class="btn btn-secondary nav-cta active" style="padding: 0.5rem 1rem; border-radius: 6px;">Interactive Matrix</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page content -->
+  <main class="container">
+    <div class="glass-card" style="margin-top: 2rem; text-align: center;">
+      <span class="hero-tag">Dynamic Strategy Tool</span>
+      <h1 style="font-family: var(--font-display); font-size: 2.8rem; margin-top: 0.5rem; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Interactive Comparison Matrix</h1>
+      <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 0.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+        Filter, search, and sort global AI credentials based on cost, cooldown penalties, and ecosystem demand to find your next high-value course creation market.
+      </p>
+    </div>
+
+    <!-- Filters and Sorting Controls -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Search</span>
+        <input type="text" id="searchBar" class="search-input" placeholder="Search certifications...">
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Provider</span>
+        <select id="providerFilter" class="filter-select">
+          <option value="all">All Providers</option>
+          <option value="Anthropic">Anthropic</option>
+          <option value="IAPP">IAPP</option>
+          <option value="Google">Google Cloud</option>
+          <option value="AWS">AWS</option>
+          <option value="NVIDIA">NVIDIA</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Stakes Level</span>
+        <select id="stakesFilter" class="filter-select">
+          <option value="all">All Stakes</option>
+          <option value="medium">Medium-Stakes</option>
+          <option value="high">High-Stakes</option>
+          <option value="extreme">Extreme-Stakes</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Sort By</span>
+        <select id="sortControl" class="filter-select">
+          <option value="default">Default (Priority)</option>
+          <option value="cost-desc">Cost: High to Low</option>
+          <option value="cost-asc">Cost: Low to High</option>
+          <option value="lockout">Lockout Severity</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Matrix Table -->
+    <div class="matrix-wrapper">
+      <table class="matrix-table" id="matrixTable">
+        <thead>
+          <tr>
+            <th>Certification Name</th>
+            <th>Exam Cost</th>
+            <th>Lockout Penalty</th>
+            <th>Market Demand</th>
+            <th>Stakes Indicator</th>
+            <th>Official Website</th>
+          </tr>
+        </thead>
+        <tbody id="matrixBody">
+          <!-- Dynamically Rendered Rows -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Script for Filtering, Searching, and Sorting -->
+  <script>
+    // Data Source
+    const certifications = [
+      {
+        name: "Claude Certified Architect - Foundations",
+        provider: "Anthropic",
+        cost: 99,
+        lockoutDays: 14,
+        lockoutDesc: "Standard cooling wait (~14 days)",
+        demand: "Critical-High",
+        stakes: "medium",
+        link: "https://www.anthropic.com/",
+        priority: 1
+      },
+      {
+        name: "Artificial Intelligence Governance Professional (AIGP)",
+        provider: "IAPP",
+        cost: 625,
+        lockoutDays: 30,
+        lockoutDesc: "30-Day Delay between attempts",
+        demand: "High (Legal/Corp)",
+        stakes: "extreme",
+        link: "https://iapp.org/certify/aigp/",
+        priority: 2
+      },
+      {
+        name: "Professional Machine Learning Engineer",
+        provider: "Google",
+        cost: 200,
+        lockoutDays: 365,
+        lockoutDesc: "1st fail: 14d | 2nd: 60d | 3rd: 365d",
+        demand: "Medium-High",
+        stakes: "high",
+        link: "https://cloud.google.com/learn/certification/guides/machine-learning-engineer",
+        priority: 3
+      },
+      {
+        name: "AWS Certified Generative AI Developer - Specialty",
+        provider: "AWS",
+        cost: 300,
+        lockoutDays: 14,
+        lockoutDesc: "14 calendar days lockout",
+        demand: "High (Developer)",
+        stakes: "medium",
+        link: "https://aws.amazon.com/certification/certified-generative-ai-developer-specialty/",
+        priority: 4
+      },
+      {
+        name: "Certified Professional - Generative AI & LLMs",
+        provider: "NVIDIA",
+        cost: 300,
+        lockoutDays: 14,
+        lockoutDesc: "14 Days lockout",
+        demand: "High (Hardware/Infra)",
+        stakes: "medium",
+        link: "https://www.nvidia.com/en-us/learn/certification/",
+        priority: 5
+      }
+    ];
+
+    const matrixBody = document.getElementById("matrixBody");
+    const searchBar = document.getElementById("searchBar");
+    const providerFilter = document.getElementById("providerFilter");
+    const stakesFilter = document.getElementById("stakesFilter");
+    const sortControl = document.getElementById("sortControl");
+
+    function renderTable(data) {
+      matrixBody.innerHTML = "";
+      if (data.length === 0) {
+        matrixBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">No matching certifications found.</td></tr>`;
+        return;
+      }
+
+      data.forEach(cert => {
+        const stakesBadgeClass = cert.stakes === 'extreme' ? 'high' : cert.stakes; // Map extreme stakes color
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <span class="cert-name">${cert.name}</span>
+            <span class="cert-provider">${cert.provider} Network</span>
+          </td>
+          <td style="font-weight: 700; color: var(--text-primary);">$${cert.cost}</td>
+          <td>${cert.lockoutDesc}</td>
+          <td>${cert.demand}</td>
+          <td><span class="badge-risk ${stakesBadgeClass}">${cert.stakes.toUpperCase()}-STAKES</span></td>
+          <td>
+            <a href="${cert.link}" target="_blank" rel="noopener noreferrer" class="official-link">
+              Official Page ↗
+            </a>
+          </td>
+        `;
+        matrixBody.appendChild(tr);
+      });
+    }
+
+    function filterAndSort() {
+      let filtered = [...certifications];
+
+      // Search Query
+      const query = searchBar.value.toLowerCase().trim();
+      if (query) {
+        filtered = filtered.filter(cert => 
+          cert.name.toLowerCase().includes(query) || 
+          cert.provider.toLowerCase().includes(query) ||
+          cert.demand.toLowerCase().includes(query)
+        );
+      }
+
+      // Provider Filter
+      const provider = providerFilter.value;
+      if (provider !== "all") {
+        filtered = filtered.filter(cert => cert.provider === provider);
+      }
+
+      // Stakes Filter
+      const stakes = stakesFilter.value;
+      if (stakes !== "all") {
+        filtered = filtered.filter(cert => cert.stakes === stakes);
+      }
+
+      // Sort
+      const sortBy = sortControl.value;
+      if (sortBy === "cost-desc") {
+        filtered.sort((a, b) => b.cost - a.cost);
+      } else if (sortBy === "cost-asc") {
+        filtered.sort((a, b) => a.cost - b.cost);
+      } else if (sortBy === "lockout") {
+        filtered.sort((a, b) => b.lockoutDays - a.lockoutDays);
+      } else {
+        filtered.sort((a, b) => a.priority - b.priority);
+      }
+
+      renderTable(filtered);
+    }
+
+    // Event Listeners
+    searchBar.addEventListener("input", filterAndSort);
+    providerFilter.addEventListener("change", filterAndSort);
+    stakesFilter.addEventListener("change", filterAndSort);
+    sortControl.addEventListener("change", filterAndSort);
+
+    // Initial Render
+    renderTable(certifications);
+  </script>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-icon"></span>
+          AI Certs Analytica
+        </a>
+        <p>Market intelligence for global AI course creators. We identify high-stakes exam domains where candidates have the highest financial and career penalties for failure.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Certifications</h4>
+          <ul>
+            <li><a href="claude-architect.html">Claude Architect</a></li>
+            <li><a href="iapp-aigp.html">IAPP AIGP</a></li>
+            <li><a href="google-cloud-ml.html">GCP ML Engineer</a></li>
+            <li><a href="aws-generative-ai.html">AWS GenAI Specialty</a></li>
+            <li><a href="nvidia-ai.html">NVIDIA GenAI</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Creator Resources</h4>
+          <ul>
+            <li><a href="about.html">Strategy Guide</a></li>
+            <li><a href="matrix.html">Interactive Matrix</a></li>
+            <li><a href="index.html#top-picks">Top 3 Picks</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 AI Certs Analytica. Built for modern tech training course decision makers.</p>
+      <p>Data updated: June 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>
